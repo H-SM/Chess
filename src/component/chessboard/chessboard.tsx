@@ -98,31 +98,39 @@ export default function Chessboard() {
     }
     function placePiece(e: React.MouseEvent) {
         const chessboard = chessboardRef.current;
+        
         if (activePiece && chessboard ) {
             const x= Math.floor((e.clientX - chessboard.offsetLeft)/ 100);
             const y= Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800)/ 100));
 
+            const currentPiece = pieces.find(p => p.x === gridX && p.y === gridY);
            
             //reassigning the new locations to the chess pieces after the move
-            setPieces((value) => {
-            const pieces = value.map((p)=>{
-                if(p.x === gridX && p.y=== gridY){
-                     //refree checks for the move
-                const validMove = refree.isValidMove(gridX, gridY, x, y, p.type, p.team,value);
-                    if(validMove){
-                    p.x=x;
-                    p.y=y;
-                    }else{
-                        //this makes the pawn back to its relative place(relavtive to the screen)
-                        activePiece.style.position= "relative";
-                        activePiece.style.removeProperty("top");
-                        activePiece.style.removeProperty("left");
+            if(currentPiece){
+                const validMove = refree.isValidMove(gridX, gridY, x, y, currentPiece.type, currentPiece.team,pieces);
+                if(validMove){
+                //UPDATING OUT PIECES , remove the attecked piece too
+                const updatedPieces = pieces.reduce((results, piece)=>{
+                    if(piece.x === currentPiece.x && piece.y === currentPiece.y){
+                        piece.x=x;
+                        piece.y=y;
+                        results.push(piece);
+                    }else if(!(piece.x === x && piece.y === y)){
+                        results.push(piece);
                     }
+                    return results;
+                },[] as Piece[]);
+
+                setPieces(updatedPieces);
+                //dont set it via a value like ->  setPieces((value)=> updatedPieces);
+
+                }else{
+                    //reseting the piece position <invalid move>
+                    activePiece.style.position= "relative";
+                    activePiece.style.removeProperty("top");
+                    activePiece.style.removeProperty("left");
                 }
-                    return p;
-                });
-                return pieces;
-            });
+            }
             setActivePiece(null);
         }
     }
