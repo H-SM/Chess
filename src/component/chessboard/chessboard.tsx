@@ -3,7 +3,7 @@ import './chessboard.css';
 import Tile from '../tile/tile'
 import Refree from "../../referee/refree";
 
-interface Piece {
+export interface Piece {
     image: string,
     x: number,
     y: number,
@@ -108,13 +108,13 @@ export default function Chessboard() {
             const pieces = value.map((p)=>{
                 if(p.x === gridX && p.y=== gridY){
                      //refree checks for the move
-                const validMove = refree.isValidMove(gridX, gridY, x, y, p.type, p.team);
+                const validMove = refree.isValidMove(gridX, gridY, x, y, p.type, p.team,value);
                     if(validMove){
                     p.x=x;
                     p.y=y;
                     }else{
                         //this makes the pawn back to its relative place(relavtive to the screen)
-                        activePiece.style.position= "relavtive";
+                        activePiece.style.position= "relative";
                         activePiece.style.removeProperty("top");
                         activePiece.style.removeProperty("left");
                     }
