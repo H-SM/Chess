@@ -9,6 +9,7 @@ export interface Piece {
     y: number,
     type : PieceType,
     team : TeamType,
+    enpassant ?: boolean,
 }
 
 export enum PieceType {
@@ -106,16 +107,48 @@ export default function Chessboard() {
             const currentPiece = pieces.find(p => p.x === gridX && p.y === gridY);
            
             //reassigning the new locations to the chess pieces after the move
+            // the currentPiece(x,y) changes over each iter, making the white pawns to respawn over black over the reduce function
             if(currentPiece){
                 const validMove = refree.isValidMove(gridX, gridY, x, y, currentPiece.type, currentPiece.team,pieces);
-                if(validMove){
+
+                const isEnPassant = refree.isEnPassantMove(gridX, gridY, x, y, currentPiece.type, currentPiece.team,pieces);
+
+                if(isEnPassant){
+                    const pieceDirection = (currentPiece.team === TeamType.WHITE)?1 : -1;
+                    const updatedPieces = pieces.reduce((result, piece)=> {
+                        if(piece.x === gridX && piece.y === gridY){
+                            piece.x = x;
+                            piece.y = y;
+                            result.push(piece);
+                            piece.enpassant = false;
+                        }else if(!(piece.x === x && piece.y === y - pieceDirection)){
+                            if(piece.type === PieceType.PAWN){
+                                piece.enpassant = false;
+                            }
+                            result.push(piece);
+                        }
+                        return result;
+
+                    },[] as Piece[]);
+
+                    setPieces(updatedPieces);
+                }else if(validMove){
                 //UPDATING OUT PIECES , remove the attecked piece too
                 const updatedPieces = pieces.reduce((results, piece)=>{
-                    if(piece.x === currentPiece.x && piece.y === currentPiece.y){
+                    if(piece.x === gridX && piece.y === gridY){
+                        if(Math.abs(gridY - y)=== 2 && piece.type === PieceType.PAWN){
+                            //SPECIAL MOVE OF PAWN
+                            piece.enpassant = true;
+                        }else{
+                            piece.enpassant = false;
+                        }
                         piece.x=x;
                         piece.y=y;
                         results.push(piece);
                     }else if(!(piece.x === x && piece.y === y)){
+                        if(piece.type === PieceType.PAWN){
+                            piece.enpassant = false;
+                        }
                         results.push(piece);
                     }
                     return results;

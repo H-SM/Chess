@@ -17,6 +17,19 @@ export default class refree {
             return false;
         }
     }   
+    isEnPassantMove(px:number, py : number, x: number, y : number,type: PieceType,team: TeamType, boardState:Piece[] ){
+
+        if(type === PieceType.PAWN){
+            const pieceDirection = (team === TeamType.WHITE)?1 : -1;
+            if((x- px === -1 || x- px === 1) && y-py === pieceDirection){
+                const piece = boardState.find(p => p.x === x && p.y === y - pieceDirection && p.enpassant);
+                if(piece){
+                return true;
+                }
+            }
+        }
+        return false;
+    }
     isValidMove(px : number, py : number, x : number, y : number, type: PieceType, team : TeamType, boardState : Piece[]){
         // console.log(`Previous location: ${px}, ${py}\nNew location: ${x}, ${y}\nType: ${type}\nTeam: ${team}`);
 
