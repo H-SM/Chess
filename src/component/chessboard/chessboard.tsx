@@ -2,56 +2,10 @@ import React, { useRef, useState } from 'react';
 import './chessboard.css';
 import Tile from '../tile/tile'
 import Refree from "../../referee/refree";
-
-export interface Piece {
-    image: string,
-    x: number,
-    y: number,
-    type : PieceType,
-    team : TeamType,
-    enpassant ?: boolean,
-}
-
-export enum PieceType {
-    PAWN,
-    BISHOP,
-    HORSE,
-    ROOK,
-    QUEEN, 
-    KING
-}
-export enum TeamType {
-    WHITE,
-    BLACK
-}
-
-const initialBoardState: Piece[] = [];
-
-for (let p = 0; p < 2; p++) {
-    const teamtype = (p===0)? TeamType.BLACK:TeamType.WHITE; 
-    const type = (p === 0) ? "b" : "l";
-    const y = (p === 0) ? 7 : 0;
-
-    initialBoardState.push({ image: `assests/images/rook_${type}.png`, x: 0, y , type : PieceType.ROOK, team : teamtype});
-    initialBoardState.push({ image: `assests/images/rook_${type}.png`, x: 7, y , type : PieceType.ROOK, team : teamtype});
-    initialBoardState.push({ image: `assests/images/horse_${type}.png`, x: 1, y , type : PieceType.HORSE, team : teamtype});
-    initialBoardState.push({ image: `assests/images/horse_${type}.png`, x: 6, y , type : PieceType.HORSE, team : teamtype});
-    initialBoardState.push({ image: `assests/images/bishop_${type}.png`, x: 2, y , type : PieceType.BISHOP, team : teamtype});
-    initialBoardState.push({ image: `assests/images/bishop_${type}.png`, x: 5, y , type : PieceType.BISHOP, team : teamtype});
-    initialBoardState.push({ image: `assests/images/queen_${type}.png`, x: 3, y , type : PieceType.QUEEN, team : teamtype});
-    initialBoardState.push({ image: `assests/images/king_${type}.png`, x: 4, y , type : PieceType.KING, team : teamtype});
-}
-for (let i = 0; i < 8; i++) {
-    initialBoardState.push({ image: "assests/images/pawn_b.png", x: i, y: 6 , type : PieceType.PAWN, team : TeamType.BLACK});
-}
-
-for (let i = 0; i < 8; i++) {
-    initialBoardState.push({ image: "assests/images/pawn_l.png", x: i, y: 1 , type : PieceType.PAWN, team : TeamType.WHITE});
-}
+import { PieceType, TeamType , Piece, initialBoardState ,Position, GRID_SIZE, samePosition} from '../../constants';
 
 export default function Chessboard() {
-    const [gridX,setGridX]=useState(0);
-    const [gridY,setGridY]=useState(0);
+    const [grabPosition, setGrabPosition]=useState<Position>({x:-1,y:-1});
     const [activePiece, setActivePiece]=useState<HTMLElement | null >(null);
     const [pieces, setPieces]= useState<Piece[]>(initialBoardState)
     const chessboardRef = useRef<HTMLDivElement>(null);
@@ -84,12 +38,12 @@ export default function Chessboard() {
 
         if (element.classList.contains('chess-piece') && chessboard) {
             // console.log(e.target);
-    
-            setGridX(Math.floor((e.clientX - chessboard.offsetLeft)/ 100));
-            setGridY(Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800)/ 100)));
+            const gX = Math.floor((e.clientX - chessboard.offsetLeft)/ GRID_SIZE);
+            const gY = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800)/ GRID_SIZE));
+            setGrabPosition({x: gX, y: gY});
 
-            const x = e.clientX - 50;
-            const y = e.clientY - 50;
+            const x = e.clientX - GRID_SIZE/2;
+            const y = e.clientY - GRID_SIZE/2;
             element.style.position = "absolute";
             element.style.left = `${x}px`;
             element.style.top = `${y}px`;
@@ -101,27 +55,29 @@ export default function Chessboard() {
         const chessboard = chessboardRef.current;
         
         if (activePiece && chessboard ) {
-            const x= Math.floor((e.clientX - chessboard.offsetLeft)/ 100);
-            const y= Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800)/ 100));
+            const x= Math.floor((e.clientX - chessboard.offsetLeft)/ GRID_SIZE);
+            const y= Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800)/ GRID_SIZE));
 
-            const currentPiece = pieces.find(p => p.x === gridX && p.y === gridY);
+            const currentPiece = pieces.find(p => samePosition(p.position, grabPosition));
            
             //reassigning the new locations to the chess pieces after the move
             // the currentPiece(x,y) changes over each iter, making the white pawns to respawn over black over the reduce function
             if(currentPiece){
-                const validMove = refree.isValidMove(gridX, gridY, x, y, currentPiece.type, currentPiece.team,pieces);
+                const validMove = refree.isValidMove(grabPosition, {x, y}, currentPiece.type, currentPiece.team,pieces);
 
-                const isEnPassant = refree.isEnPassantMove(gridX, gridY, x, y, currentPiece.type, currentPiece.team,pieces);
+                const isEnPassant = refree.isEnPassantMove(grabPosition, {x, y}, currentPiece.type, currentPiece.team,pieces);
+                //TODO: WE CAN REDUCE THIS REPETITION OF PROPERTIES USING REDUX STATE... RN IT'S 80-20
+
 
                 if(isEnPassant){
                     const pieceDirection = (currentPiece.team === TeamType.WHITE)?1 : -1;
                     const updatedPieces = pieces.reduce((result, piece)=> {
-                        if(piece.x === gridX && piece.y === gridY){
-                            piece.x = x;
-                            piece.y = y;
+                        if(piece.position.x === grabPosition.x && piece.position.y === grabPosition.y){
+                            piece.position.x = x;
+                            piece.position.y = y;
                             result.push(piece);
                             piece.enpassant = false;
-                        }else if(!(piece.x === x && piece.y === y - pieceDirection)){
+                        }else if(!(samePosition(piece.position,{x, y: y - pieceDirection}))){
                             if(piece.type === PieceType.PAWN){
                                 piece.enpassant = false;
                             }
@@ -135,17 +91,14 @@ export default function Chessboard() {
                 }else if(validMove){
                 //UPDATING OUT PIECES , remove the attecked piece too
                 const updatedPieces = pieces.reduce((results, piece)=>{
-                    if(piece.x === gridX && piece.y === gridY){
-                        if(Math.abs(gridY - y)=== 2 && piece.type === PieceType.PAWN){
-                            //SPECIAL MOVE OF PAWN
-                            piece.enpassant = true;
-                        }else{
-                            piece.enpassant = false;
-                        }
-                        piece.x=x;
-                        piece.y=y;
+                    if(samePosition(piece.position, grabPosition)){
+                        //SPECIAL ROW MOVEMENT
+                        piece.enpassant = Math.abs(grabPosition.y - y)=== 2 && piece.type === PieceType.PAWN;
+    
+                        piece.position.x = x;
+                        piece.position.y = y;
                         results.push(piece);
-                    }else if(!(piece.x === x && piece.y === y)){
+                    }else if(!(samePosition(piece.position, {x,y}))){
                         if(piece.type === PieceType.PAWN){
                             piece.enpassant = false;
                         }
@@ -172,13 +125,9 @@ export default function Chessboard() {
     for (let j = 7; j >= 0; j--) {//vertical
         for (let i = 0; i < 8; i++) {//horizontal
             let no = i + j + 2;
-            let image = undefined;//not null here 
-
-            pieces.forEach(p => {
-                if (p.x === i && p.y === j) {
-                    image = p.image;
-                }
-            })
+            const piece = pieces.find(p=>samePosition(p.position, {x:i,y:j}));
+            let image = piece ? piece.image : undefined;//not null here 
+    
             board.push(<Tile key={`${j},${i}`} no={no} i={i} j={j} image={image} />);
 
         }
