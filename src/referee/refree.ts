@@ -1,22 +1,28 @@
-import { PieceType, TeamType , Piece, Position} from '../constants';
+import { PieceType, TeamType , Piece, Position, samePosition} from '../constants';
 
 export default class refree {
-    tileIsOccupied(x : number,y : number, boardState : Piece[]): boolean {
-        const piece = boardState.find(p => p.position.x === x && p.position.y === y)
+    tileIsEmptyOrOccupiedByOpponent(position : Position, boardState : Piece[], team : TeamType): boolean{
+    return (!this.tileIsOccupied(position, boardState) || this.tileIsOccupiedByOpponent(position,boardState,team));
+    }
+
+    tileIsOccupied(position : Position, boardState : Piece[]): boolean {
+        const piece = boardState.find(p => samePosition(p.position, position));
         if(piece){
             return true;
         }else{
             return false;
         }
     }
-    tileIsOccupiedByOpponent(x: number, y: number, boardState : Piece[], team : TeamType): boolean {
-        const piece = boardState.find(p=> p.position.x === x && p.position.y === y && p.team !== team);
+
+    tileIsOccupiedByOpponent(position : Position, boardState : Piece[], team : TeamType): boolean {
+        const piece = boardState.find(p=> samePosition(p.position, position) && p.team !== team);
         if(piece){
             return true;
         }else{
             return false;
         }
     }   
+
     isEnPassantMove(initialPosition : Position, finalPosition : Position,type: PieceType,team: TeamType, boardState:Piece[] ){
 
         if(type === PieceType.PAWN){
@@ -40,28 +46,53 @@ export default class refree {
 
             if(initialPosition.y === specialRow && finalPosition.y-initialPosition.y === 2*(pawnDirection)){
                 if(initialPosition.x=== finalPosition.x &&  finalPosition.y-initialPosition.y === 2*(pawnDirection)){
-                    if(!this.tileIsOccupied(finalPosition.x,finalPosition.y,boardState) && !this.tileIsOccupied(finalPosition.x,finalPosition.y-pawnDirection,boardState) ){
+                    if(!this.tileIsOccupied(finalPosition,boardState) && !this.tileIsOccupied({x:finalPosition.x,y:finalPosition.y-pawnDirection},boardState) ){
                         return true;
                     }
                 }
             }else if(initialPosition.x===finalPosition.x && finalPosition.y-initialPosition.y === pawnDirection){
-                    if(!this.tileIsOccupied(finalPosition.x,finalPosition.y,boardState)){
+                    if(!this.tileIsOccupied(finalPosition,boardState)){
                         return true;
                     }
             }
             //THE PAWN LOGIC - attack
             else if(finalPosition.x- initialPosition.x === -1 && finalPosition.y-initialPosition.y === pawnDirection){
                 //attack in upper left or bottom left corner
-                if(this.tileIsOccupiedByOpponent(finalPosition.x,finalPosition.y,boardState,team)){
+                if(this.tileIsOccupiedByOpponent(finalPosition,boardState,team)){
                    return true;
                 }
             }else if(finalPosition.x- initialPosition.x === 1 && finalPosition.y-initialPosition.y === pawnDirection){
                 //attack in upper right or bottom right corner
-                if(this.tileIsOccupiedByOpponent(finalPosition.x,finalPosition.y,boardState,team)){
+                if(this.tileIsOccupiedByOpponent(finalPosition,boardState,team)){
                     return true;
                 }
             }
 
+        }else if(type === PieceType.HORSE ){
+            //moving logic for the HORSE 
+            //there are 8 different locations where it can go  4 x 2 
+
+            for(let i=-1;i<2;i+=2){
+                //t/b
+                for(let j=-1;j<2;j+=2){
+                    if(finalPosition.y - initialPosition.y === 2 * i){
+                        if(finalPosition.x - initialPosition.x === j){
+                            if(this.tileIsEmptyOrOccupiedByOpponent(finalPosition,boardState,team)){
+                                return true; 
+                            }
+                        // return true;
+                        }
+                    }
+                    //l/r
+                    if(finalPosition.x - initialPosition.x === 2 * i){
+                        if(finalPosition.y - initialPosition.y === j){
+                            if(this.tileIsEmptyOrOccupiedByOpponent(finalPosition,boardState,team)){
+                                return true; 
+                            }
+                        }
+                    }
+                }
+            }   
         }
         return false;
     }
