@@ -69,9 +69,6 @@ export default class refree {
             }
 
         }else if(type === PieceType.HORSE ){
-            //moving logic for the HORSE 
-            //there are 8 different locations where it can go  4 x 2 
-
             for(let i=-1;i<2;i+=2){
                 //t/b
                 for(let j=-1;j<2;j+=2){
@@ -80,7 +77,6 @@ export default class refree {
                             if(this.tileIsEmptyOrOccupiedByOpponent(finalPosition,boardState,team)){
                                 return true; 
                             }
-                        // return true;
                         }
                     }
                     //l/r
@@ -93,6 +89,49 @@ export default class refree {
                     }
                 }
             }   
+        }else if(type === PieceType.BISHOP ){
+            //movement 
+            //up right 
+            if(Math.abs(finalPosition.x-initialPosition.x) === Math.abs(finalPosition.y - initialPosition.y)){
+                    
+                    if(finalPosition.x>initialPosition.x && finalPosition.y > initialPosition.y){
+                        for(let i=1; i<Math.abs(finalPosition.y - initialPosition.y + 1);i++){
+                        let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y +i};
+                        if(this.tileIsOccupied(passedPosition, boardState)){
+                            console.log("1");
+                            return false;
+                            //illegal <piece in between>
+                        }
+                        }
+                    }else if(finalPosition.x> initialPosition.x && finalPosition.y < initialPosition.y){
+                        for(let i=1; i<Math.abs(finalPosition.y + initialPosition.y + 1);i++){
+                        let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y - i};
+                            if(this.tileIsOccupied(passedPosition, boardState)){
+                            console.log("2");
+                            return false;
+                            }
+                        }
+                    }
+                    else if(finalPosition.x< initialPosition.x && finalPosition.y < initialPosition.y){
+                        for(let i=1; i<Math.abs(finalPosition.y + initialPosition.y + 1);i++){
+                        let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y - i};
+                            if(this.tileIsOccupied(passedPosition, boardState)){
+                            console.log("3");
+                            return false;
+                            }
+                        }
+                    }
+                    else if(finalPosition.x< initialPosition.x && finalPosition.y > initialPosition.y){
+                        for(let i=1; i<Math.abs(finalPosition.y + initialPosition.y + 1);i++){
+                        let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y + i};
+                            if(this.tileIsOccupied(passedPosition, boardState)){
+                            console.log("4");
+                            return false;
+                            }
+                        }
+                    }
+                return true;
+            }
         }
         return false;
     }

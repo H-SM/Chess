@@ -89,7 +89,7 @@ export default function Chessboard() {
 
                     setPieces(updatedPieces);
                 }else if(validMove){
-                //UPDATING OUT PIECES , remove the attecked piece too
+                //UPDATING OUT PIECES , remove the attacked piece too
                 const updatedPieces = pieces.reduce((results, piece)=>{
                     if(samePosition(piece.position, grabPosition)){
                         //SPECIAL ROW MOVEMENT
