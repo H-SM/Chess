@@ -90,48 +90,76 @@ export default class refree {
                 }
             }   
         }else if(type === PieceType.BISHOP ){
-            //movement 
-            //up right 
+    
+            //LOOKS FOR DIAGONAL MOVEMENT
             if(Math.abs(finalPosition.x-initialPosition.x) === Math.abs(finalPosition.y - initialPosition.y)){
-                    
+                    //looks for pieces for that particular direction
                     if(finalPosition.x>initialPosition.x && finalPosition.y > initialPosition.y){
-                        for(let i=1; i<Math.abs(finalPosition.y - initialPosition.y + 1);i++){
-                        let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y +i};
-                        if(this.tileIsOccupied(passedPosition, boardState)){
-                            console.log("1");
-                            return false;
-                            //illegal <piece in between>
-                        }
-                        }
-                    }else if(finalPosition.x> initialPosition.x && finalPosition.y < initialPosition.y){
-                        for(let i=1; i<Math.abs(finalPosition.y + initialPosition.y + 1);i++){
-                        let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y - i};
+                        for(let i=1; i<(finalPosition.y - initialPosition.y + 1);i++){
+                            let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y +i};
+                              
+                            //check if its the final tile?
+                            if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                                if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
+                                return true;
+                                }
+                            }
                             if(this.tileIsOccupied(passedPosition, boardState)){
-                            console.log("2");
-                            return false;
+                                // console.log('tr');
+                                    return false;
+                                }
+                            }
+                        }
+                    //PROB
+                    else if(finalPosition.x> initialPosition.x && finalPosition.y < initialPosition.y){
+                        for(let i=1; i<(initialPosition.y - finalPosition.y + 1);i++){
+                        let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y - i};
+                    
+                        if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                            if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
+                            return true;
+                            }
+                        }
+                        if(this.tileIsOccupied(passedPosition, boardState)){
+                            // console.log('br');
+                                return false;
                             }
                         }
                     }
                     else if(finalPosition.x< initialPosition.x && finalPosition.y < initialPosition.y){
-                        for(let i=1; i<Math.abs(finalPosition.y + initialPosition.y + 1);i++){
+                        for(let i=1; i<(initialPosition.y - finalPosition.y + 1);i++){
                         let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y - i};
-                            if(this.tileIsOccupied(passedPosition, boardState)){
-                            console.log("3");
-                            return false;
+                        
+                        if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                            
+                            if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
+                            return true;
+                            }
+                        }
+                        if(this.tileIsOccupied(passedPosition, boardState)){
+                            // console.log('bl');
+                                return false;
                             }
                         }
                     }
-                    else if(finalPosition.x< initialPosition.x && finalPosition.y > initialPosition.y){
-                        for(let i=1; i<Math.abs(finalPosition.y + initialPosition.y + 1);i++){
+                    else if(finalPosition.x < initialPosition.x && finalPosition.y > initialPosition.y){ //tl 
+                        for(let i=1; i<(finalPosition.y - initialPosition.y + 1);i++){
                         let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y + i};
-                            if(this.tileIsOccupied(passedPosition, boardState)){
-                            console.log("4");
-                            return false;
+                         
+                        if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                            if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
+                            return true;
+                            }
+                        }
+                        if(this.tileIsOccupied(passedPosition, boardState)){
+                            // console.log('tl');
+                                return false;
                             }
                         }
                     }
-                return true;
             }
+        }else if(type === PieceType.ROOK ){
+            return true;
         }
         return false;
     }
