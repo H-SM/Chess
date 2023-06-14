@@ -98,7 +98,6 @@ export default class refree {
                         for(let i=1; i<(finalPosition.y - initialPosition.y + 1);i++){
                             let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y +i};
                               
-                            //check if its the final tile?
                             if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
                                 if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                                 return true;
@@ -110,7 +109,6 @@ export default class refree {
                                 }
                             }
                         }
-                    //PROB
                     else if(finalPosition.x> initialPosition.x && finalPosition.y < initialPosition.y){
                         for(let i=1; i<(initialPosition.y - finalPosition.y + 1);i++){
                         let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y - i};
@@ -159,7 +157,36 @@ export default class refree {
                     }
             }
         }else if(type === PieceType.ROOK ){
-            return true;
+            if(initialPosition.x === finalPosition.x){
+                //vertical line
+
+                for(let i=1; i<8;i++){
+                    let director = (initialPosition.y > finalPosition.y)? -1:1;
+                    let passedPosition : Position = { x : initialPosition.x , y: initialPosition.y + (director * i)};
+                    if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                        if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
+                        return true;
+                        }
+                    }
+                    if(this.tileIsOccupied(passedPosition, boardState)){
+                            return false;
+                        }
+                }
+            }else if(initialPosition.y === finalPosition.y){
+                //horizontal line
+                for(let i=1; i<8;i++){
+                    let director = (initialPosition.x > finalPosition.x)? -1:1;
+                    let passedPosition : Position = { x : initialPosition.x + ( director * i), y: initialPosition.y };
+                    if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                        if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
+                        return true;
+                        }
+                    }
+                    if(this.tileIsOccupied(passedPosition, boardState)){
+                            return false;
+                        }
+                }
+            }
         }
         return false;
     }
