@@ -92,6 +92,7 @@ export default class refree {
     }
 
     rookMove(initialPosition : Position, finalPosition : Position, team : TeamType, boardState : Piece[]): boolean{
+        //TODO: try improving the rook logic similar way as the bishop's
         if(initialPosition.x === finalPosition.x){
             //vertical line
             for(let i=1; i<8;i++){
@@ -126,73 +127,26 @@ export default class refree {
 
     bishopMove(initialPosition : Position, finalPosition : Position, team : TeamType, boardState : Piece[]): boolean{
         if(Math.abs(finalPosition.x-initialPosition.x) === Math.abs(finalPosition.y - initialPosition.y)){
-            //looks for pieces for that particular direction
-            if(finalPosition.x>initialPosition.x && finalPosition.y > initialPosition.y){
-                for(let i=1; i<(finalPosition.y - initialPosition.y + 1);i++){
-                    let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y +i};
-                      
-                    if(samePosition(passedPosition, finalPosition)){
-                        if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
-                        return true;
-                        }
-                    }
-                    if(this.tileIsOccupied(passedPosition, boardState)){
-                        // console.log('tr');
-                            return false;
-                        }
-                    }
-                }
-            else if(finalPosition.x> initialPosition.x && finalPosition.y < initialPosition.y){
-                for(let i=1; i<(initialPosition.y - finalPosition.y + 1);i++){
-                let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y - i};
-            
+            let multiplierX = (initialPosition.x > finalPosition.x)? -1:1;
+            let multiplierY = (initialPosition.y > finalPosition.y)? -1:1;
+            let iMax = (multiplierY === 1)?(finalPosition.y - initialPosition.y + 1):(initialPosition.y - finalPosition.y + 1);
+            for(let i=1; i<iMax;i++){
+                let passedPosition : Position = { x : initialPosition.x + (i * multiplierX), y: initialPosition.y + (i * multiplierY)};
+                  
                 if(samePosition(passedPosition, finalPosition)){
                     if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                     return true;
                     }
                 }
                 if(this.tileIsOccupied(passedPosition, boardState)){
-                    // console.log('br');
                         return false;
                     }
                 }
-            }
-            else if(finalPosition.x< initialPosition.x && finalPosition.y < initialPosition.y){
-                for(let i=1; i<(initialPosition.y - finalPosition.y + 1);i++){
-                let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y - i};
-                
-                if(samePosition(passedPosition, finalPosition)){ 
-                    if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
-                    return true;
-                    }
-                }
-                if(this.tileIsOccupied(passedPosition, boardState)){
-                    // console.log('bl');
-                        return false;
-                    }
-                }
-            }
-            else if(finalPosition.x < initialPosition.x && finalPosition.y > initialPosition.y){ //tl 
-                for(let i=1; i<(finalPosition.y - initialPosition.y + 1);i++){
-                let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y + i};
-                 
-                if(samePosition(passedPosition, finalPosition)){
-                    if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
-                    return true;
-                    }
-                }
-                if(this.tileIsOccupied(passedPosition, boardState)){
-                    // console.log('tl');
-                        return false;
-                    }
-                }
-            }
         }
         return false;
     }
 
     queenMove(initialPosition : Position, finalPosition : Position, team : TeamType, boardState : Piece[]): boolean{
-        //ill combine bishop and rook here 
         if(this.bishopMove(initialPosition,finalPosition,team, boardState)){
             return true;
         }else if(this.rookMove(initialPosition,finalPosition,team, boardState)){

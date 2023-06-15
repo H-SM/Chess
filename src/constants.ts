@@ -48,7 +48,7 @@ export const initialBoardState: Piece[] = [
     { image: `assests/images/horse_l.png`,position : { x: 6, y : 0}, type : PieceType.HORSE, team : TeamType.WHITE},
     { image: `assests/images/bishop_l.png`,position : { x: 2, y : 0}, type : PieceType.BISHOP, team : TeamType.WHITE},
     { image: `assests/images/bishop_l.png`,position : { x: 5, y : 0}, type : PieceType.BISHOP, team : TeamType.WHITE},
-    { image: `assests/images/queen_l.png`,position : { x: 3, y : 3}, type : PieceType.QUEEN, team : TeamType.WHITE},//CHANGE DONE HERE 
+    { image: `assests/images/queen_l.png`,position : { x: 3, y : 0}, type : PieceType.QUEEN, team : TeamType.WHITE},
     { image: `assests/images/king_l.png`,position : { x: 4, y : 0}, type : PieceType.KING, team : TeamType.WHITE},
 
     { image: "assests/images/pawn_b.png",position : { x: 0, y: 6 }, type : PieceType.PAWN, team : TeamType.BLACK},
