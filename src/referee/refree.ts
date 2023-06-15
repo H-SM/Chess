@@ -97,7 +97,7 @@ export default class refree {
             for(let i=1; i<8;i++){
                 let director = (initialPosition.y > finalPosition.y)? -1:1;
                 let passedPosition : Position = { x : initialPosition.x , y: initialPosition.y + (director * i)};
-                if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                if(samePosition(passedPosition, finalPosition)){
                     if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                     return true;
                     }
@@ -111,7 +111,7 @@ export default class refree {
             for(let i=1; i<8;i++){
                 let director = (initialPosition.x > finalPosition.x)? -1:1;
                 let passedPosition : Position = { x : initialPosition.x + ( director * i), y: initialPosition.y };
-                if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                if(samePosition(passedPosition, finalPosition)){
                     if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                     return true;
                     }
@@ -131,7 +131,7 @@ export default class refree {
                 for(let i=1; i<(finalPosition.y - initialPosition.y + 1);i++){
                     let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y +i};
                       
-                    if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                    if(samePosition(passedPosition, finalPosition)){
                         if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                         return true;
                         }
@@ -146,7 +146,7 @@ export default class refree {
                 for(let i=1; i<(initialPosition.y - finalPosition.y + 1);i++){
                 let passedPosition : Position = { x : initialPosition.x + i, y: initialPosition.y - i};
             
-                if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                if(samePosition(passedPosition, finalPosition)){
                     if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                     return true;
                     }
@@ -161,8 +161,7 @@ export default class refree {
                 for(let i=1; i<(initialPosition.y - finalPosition.y + 1);i++){
                 let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y - i};
                 
-                if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
-                    
+                if(samePosition(passedPosition, finalPosition)){ 
                     if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                     return true;
                     }
@@ -177,7 +176,7 @@ export default class refree {
                 for(let i=1; i<(finalPosition.y - initialPosition.y + 1);i++){
                 let passedPosition : Position = { x : initialPosition.x - i, y: initialPosition.y + i};
                  
-                if(passedPosition.x === finalPosition.x &&  passedPosition.y === finalPosition.y){
+                if(samePosition(passedPosition, finalPosition)){
                     if(this.tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
                     return true;
                     }
@@ -193,8 +192,20 @@ export default class refree {
     }
 
     queenMove(initialPosition : Position, finalPosition : Position, team : TeamType, boardState : Piece[]): boolean{
-        return true;
+        //ill combine bishop and rook here 
+        if(this.bishopMove(initialPosition,finalPosition,team, boardState)){
+            return true;
+        }else if(this.rookMove(initialPosition,finalPosition,team, boardState)){
+            return true;
+        }else 
+        return false;
     }
+
+    kingMove(initialPosition : Position, finalPosition : Position, team : TeamType, boardState : Piece[]): boolean{
+
+        return false;
+    }
+
     isValidMove(initialPosition : Position, finalPosition : Position, type: PieceType, team : TeamType, boardState : Piece[]){
         // console.log(`Previous location: ${px}, ${py}\nNew location: ${x}, ${y}\nType: ${type}\nTeam: ${team}`);
         let validMove = false;
@@ -217,6 +228,10 @@ export default class refree {
             case  PieceType.QUEEN: 
                 validMove = this.queenMove(initialPosition,finalPosition,team, boardState);
                 break;   
+            
+            case  PieceType.KING: 
+                validMove = this.kingMove(initialPosition,finalPosition,team, boardState);
+                break; 
         }
         return validMove;
     }
