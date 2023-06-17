@@ -7,8 +7,10 @@ import { PieceType, TeamType , Piece, initialBoardState ,Position, GRID_SIZE, sa
 export default function Chessboard() {
     const [grabPosition, setGrabPosition]=useState<Position>({x:-1,y:-1});
     const [activePiece, setActivePiece]=useState<HTMLElement | null >(null);
-    const [pieces, setPieces]= useState<Piece[]>(initialBoardState)
+    const [pieces, setPieces]= useState<Piece[]>(initialBoardState);
+    const [promotionPawn , setPromotionPawn ]= useState<Piece>();
     const chessboardRef = useRef<HTMLDivElement>(null);
+    const modelRef = useRef<HTMLDivElement>(null);
     const refree = new Refree();
 
 
@@ -60,8 +62,6 @@ export default function Chessboard() {
 
             const currentPiece = pieces.find(p => samePosition(p.position, grabPosition));
            
-            //reassigning the new locations to the chess pieces after the move
-            // the currentPiece(x,y) changes over each iter, making the white pawns to respawn over black over the reduce function
             if(currentPiece){
                 const validMove = refree.isValidMove(grabPosition, {x, y}, currentPiece.type, currentPiece.team,pieces);
 
@@ -97,6 +97,13 @@ export default function Chessboard() {
     
                         piece.position.x = x;
                         piece.position.y = y;
+
+                        let PromotionRow = (piece.team === TeamType.WHITE)?7:0;
+                        if(y === PromotionRow && piece.type === PieceType.PAWN){
+                            modelRef.current?.classList.remove("hidden");
+                            setPromotionPawn(piece);
+
+                        }
                         results.push(piece);
                     }else if(!(samePosition(piece.position, {x,y}))){
                         if(piece.type === PieceType.PAWN){
@@ -120,6 +127,49 @@ export default function Chessboard() {
             setActivePiece(null);
         }
     }
+
+    function promotePawn(pieceType : PieceType) {
+        if(promotionPawn === undefined){
+            return;
+        }
+        const updatedPieces = pieces.reduce((results, piece) => {
+            if(samePosition(piece.position,promotionPawn.position)){
+                piece.type= pieceType;
+                const PieceTeamType = (piece.team === TeamType.WHITE)?"l":"b";
+                let pawnPieceType = "";
+                switch(pieceType){
+                    case PieceType.ROOK: {
+                        pawnPieceType = "rook";
+                        break;
+                    }
+                    case PieceType.BISHOP: {
+                        pawnPieceType = "bishop";
+                        break;
+                    }
+                    case PieceType.HORSE: {
+                        pawnPieceType = "horse";
+                        break;
+                    }
+                    case PieceType.QUEEN: {
+                        pawnPieceType = "queen";
+                        break;
+                    }
+                }
+                piece.image= `assests/images/${pawnPieceType}_${PieceTeamType}.png`;
+            }
+            results.push(piece);
+            return results
+        },[] as Piece[]);
+
+        setPieces(updatedPieces);
+
+        modelRef.current?.classList.add("hidden");
+
+    }
+
+    function promotionTeamType() {
+        return (promotionPawn?.team === TeamType.WHITE)?"l":"b";
+    }
     let board = [];
 
     for (let j = 7; j >= 0; j--) {//vertical
@@ -133,6 +183,15 @@ export default function Chessboard() {
         }
     }
     return (
+        <>
+        <div className="pawn-promotion-model hidden" ref={modelRef}>
+            <div className="model-body">
+                <img onClick={() => {promotePawn(PieceType.ROOK)}} src={`assests/images/rook_${promotionTeamType()}.png`} alt="" />
+                <img onClick={() => {promotePawn(PieceType.BISHOP)}} src={`assests/images/bishop_${promotionTeamType()}.png`} alt="" />
+                <img onClick={() => {promotePawn(PieceType.HORSE)}} src={`assests/images/horse_${promotionTeamType()}.png`} alt="" />
+                <img onClick={() => {promotePawn(PieceType.QUEEN)}} src={`assests/images/queen_${promotionTeamType()}.png`} alt="" />
+            </div>
+        </div>
         <div
             onMouseMove={e => movePiece(e)}
             onMouseDown={e => grabPiece(e)}
@@ -141,6 +200,7 @@ export default function Chessboard() {
             id='chessboard'>
             {board}
         </div>
+        </>
     )
 }
 

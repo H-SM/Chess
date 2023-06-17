@@ -43,3 +43,34 @@ color: #749858;
     background-color: #202020;
 }
 /* #edefd3 */
+.pawn-promotion-model{
+    /* this is our overlay to prevent any bg activity */
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+}
+.pawn-promotion-model.hidden{
+    display: none;
+}
+.pawn-promotion-model > .model-body{
+    position: absolute;
+    height: 300px;
+    width: 800px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    top: calc(50% - 150px);
+    left: calc(50% - 400px);
+    background-color: rgb(0,0,0,0.6);
+}
+.pawn-promotion-model > .model-body > img{
+    height: 100px;
+    border-radius: 50%;
+    padding: 10px;
+}   
+.pawn-promotion-model > .model-body > img:hover{
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.6);
+}  
