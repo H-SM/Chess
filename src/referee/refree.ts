@@ -1,5 +1,5 @@
 import { PieceType, TeamType , Piece, Position } from '../constants';
-import { pawnMove , kingMove, rookMove, horseMove, bishopMove, queenMove, getPossblePawnMoves } from './rules';
+import { pawnMove , kingMove, rookMove, horseMove, bishopMove, queenMove, getPossblePawnMoves, getPossbleHorseMoves, getPossbleBishopMoves, getPossbleRookMoves, getPossbleQueenMoves, getPossbleKingMoves } from './rules';
 
 export default class refree { 
 
@@ -53,24 +53,15 @@ export default class refree {
             case  PieceType.PAWN: 
                 return getPossblePawnMoves(piece, boardState);
             case  PieceType.HORSE: 
-                
-                // break;
-            
+                return getPossbleHorseMoves(piece, boardState);
             case  PieceType.ROOK: 
-                
-                // break;
-            
+                return getPossbleRookMoves(piece, boardState);        
             case  PieceType.BISHOP: 
-                
-                // break;
-            
+                return getPossbleBishopMoves(piece, boardState);
             case  PieceType.QUEEN: 
-                
-                // break;   
-            
+                return getPossbleQueenMoves(piece, boardState);
             case  PieceType.KING: 
-                
-                // break; 
+                return getPossbleKingMoves(piece, boardState);
             default: 
              return [];
         }

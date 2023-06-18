@@ -13,3 +13,18 @@ export const kingMove = (initialPosition : Position, finalPosition : Position, t
     }
     return false;
 }
+export const getPossbleKingMoves= (king : Piece, boardState: Piece[]) : Position[]=> {
+    const possibleMoves :Position[] = [];
+    for(let i=-1;i<2;i++){
+        for(let j=-1;j<2;j++){
+            const verticalMove : Position = {x: king.position.x + j, y:king.position.y + i};
+            const horizontalMove : Position = {x: king.position.x + i, y:king.position.y + j};
+            if(tileIsEmptyOrOccupiedByOpponent(verticalMove,boardState,king.team)){
+                possibleMoves.push(verticalMove);
+            }
+            if(tileIsEmptyOrOccupiedByOpponent(horizontalMove,boardState,king.team)){
+                possibleMoves.push(horizontalMove);
+            }
+        }}
+    return possibleMoves;
+}
