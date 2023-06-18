@@ -17,6 +17,7 @@ export interface Piece {
     type : PieceType,
     team : TeamType,
     enpassant ?: boolean,
+    possibleMoves?: Position[],
 }
 
 export enum PieceType {

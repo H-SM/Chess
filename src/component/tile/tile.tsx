@@ -7,13 +7,16 @@ interface Props{
   image ?: string,
   no: number,
   i: number,
-  j : number
+  j : number,
+  highlight : boolean,
 }
 
-function Tile({no , i , j , image}: Props) {
-  if (no % 2 === 0) {
+function Tile({no , i , j , image , highlight}: Props) {
+  const className: string = ["tile" , no % 2 === 0 && "black-tile", no % 2 !== 0 && "white-tile", highlight && "tile-highlight"].filter(Boolean).join(" ");
+
+  
     return (
-      <div className="tile black-tile">
+      <div className={className}>
          {/* black-tile-text text-in */}
           {/* {i===0 && <div className="top-box">
              {verticalAxis[j]}
@@ -25,21 +28,7 @@ function Tile({no , i , j , image}: Props) {
           </div>} */}
       </div>
     );
-  } else {
-    return (
-      <div className="tile white-tile ">
-        {/* white-tile-text text-in */}
-          {/* {i===0 && <div className="top-box">
-             {verticalAxis[j]}
-          </div>} */}
-          {image && <div className="chess-piece" style={{backgroundImage: `url(${image})`}}></div>}
-          {/* <img className="chess-piece-image" src={image} alt="" /> */}
-          {/* {j===0 && <div className="bottom-box">
-             {horizontalAxis[i]}
-          </div>} */}
-        </div>
-    );
-  }
+
 }
 
 export default Tile;

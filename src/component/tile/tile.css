@@ -47,5 +47,11 @@ color: #749858;
 .white-tile{
     background-color: #edefd3;
 }
-
+.tile-highlight::before{
+    content: " ";
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(0,0,0,0.4);
+}
 /* #edefd3 */

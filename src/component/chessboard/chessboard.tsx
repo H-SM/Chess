@@ -33,8 +33,18 @@ export default function Chessboard() {
         }
     }
 
+    function updatevalidMoves() {
+        setPieces((currentPieces) => {
+            return currentPieces.map((p)=> {
+                p.possibleMoves=refree.getValidMoves(p,currentPieces);
+                return p;
+            });
+        });
+    }
     function grabPiece(e: React.MouseEvent) {
-        // console.log(e.target);
+        //the possible move for that piece over the state
+        updatevalidMoves();
+
         const element = e.target as HTMLElement;
         const chessboard = chessboardRef.current;
 
@@ -177,8 +187,11 @@ export default function Chessboard() {
             let no = i + j + 2;
             const piece = pieces.find(p=>samePosition(p.position, {x:i,y:j}));
             let image = piece ? piece.image : undefined;//not null here 
-    
-            board.push(<Tile key={`${j},${i}`} no={no} i={i} j={j} image={image} />);
+            
+            let currentPiece = activePiece!= null ? pieces.find(p=> samePosition(p.position, grabPosition)): undefined;
+            let highlight = currentPiece?.possibleMoves ? currentPiece.possibleMoves.some(p=> samePosition(p, {x:i, y:j})) : false;
+            // The Array.some() is an inbuilt TypeScript function which is used to check for some element in the array passes the test implemented by the provided function.
+            board.push(<Tile key={`${j},${i}`} no={no} i={i} j={j} image={image} highlight={highlight}/>);
 
         }
     }
