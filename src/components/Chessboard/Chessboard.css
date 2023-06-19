@@ -38,6 +38,10 @@
 }
 
 #pawn-promotion-modal > .modal-body > img:hover {
-    background-color: rgba(255, 255, 255, 0.6);
+    /* background-color: rgba(255, 255, 255, 0.6); */
     cursor: pointer;
+    width: 92px;
+    height: 92px;
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
 }
