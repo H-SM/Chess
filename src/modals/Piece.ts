@@ -1,4 +1,4 @@
-import { PieceType, TeamType } from "../Constants";
+import { PieceType, TeamType } from "../Types";
 import { Position } from "./Position";
 
 export class Piece {
@@ -6,7 +6,6 @@ export class Piece {
     position: Position;
     type: PieceType;
     team: TeamType;
-    enPassant?: boolean;
     possibleMoves?: Position[];
     constructor( position : Position,type: PieceType, team : TeamType) {
             this.image = `assets/images/${type}_${team}.png`;
@@ -15,5 +14,29 @@ export class Piece {
             this.team = team;
     }
 
+    get isPawn():boolean{
+            return this.type === PieceType.PAWN;
+    }
+    get isRook():boolean{
+        return this.type === PieceType.ROOK;
+    }
+    get isKnight():boolean{
+        return this.type === PieceType.KNIGHT;
+    }
+    get isQueen():boolean{
+        return this.type === PieceType.QUEEN;
+    }
+    get isKing():boolean{
+        return this.type === PieceType.KING;
+    }
+    get isBishop():boolean{
+        return this.type === PieceType.BISHOP;
+    }
 
+    samePiecePosition(otherPiece: Piece): boolean{
+        return this.position.samePosition(otherPiece.position);
+    }
+    samePosition(otherPosition: Position, ){
+        return this.position.samePosition(otherPosition);
+    }
 }

@@ -1,4 +1,4 @@
-import { samePosition, TeamType } from "../../Constants";
+import { TeamType } from "../../Types";
 import { Position } from "../../modals";
 import { Piece } from "../../modals/Piece";
 import { tileIsEmptyOrOccupiedByOpponent, tileIsOccupied, tileIsOccupiedByOpponent } from "./GeneralRules";
@@ -11,7 +11,7 @@ export const bishopMove = (initialPosition: Position, finalPosition: Position, t
     for(let i=1; i<iMax;i++){
         let passedPosition = new Position(  initialPosition.x + (i * multiplierX), initialPosition.y + (i * multiplierY));
           
-        if(samePosition(passedPosition, finalPosition)){
+        if(passedPosition.samePosition(finalPosition)){
             if(tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
             return true;
             }
@@ -29,7 +29,7 @@ return false;
 
     // Upper right movement
     for(let i = 1; i < 8; i++) {
-      const destination= new Position( bishop.position.x + i, bishop.position.y + i);
+      const destination = new Position(bishop.position.x + i, bishop.position.y + i);
 
       if(!tileIsOccupied(destination, boardstate)) {
         possibleMoves.push(destination);
@@ -43,7 +43,7 @@ return false;
 
     // Bottom right movement
     for(let i = 1; i < 8; i++) {
-      const destination= new Position( bishop.position.x + i, bishop.position.y - i);
+      const destination = new Position(bishop.position.x + i, bishop.position.y - i);
 
       if(!tileIsOccupied(destination, boardstate)) {
         possibleMoves.push(destination);
@@ -57,7 +57,7 @@ return false;
 
     // Bottom left movement
     for(let i = 1; i < 8; i++) {
-      const destination= new Position( bishop.position.x - i, bishop.position.y - i);
+      const destination = new Position(bishop.position.x - i, bishop.position.y - i);
 
       if(!tileIsOccupied(destination, boardstate)) {
         possibleMoves.push(destination);
@@ -71,7 +71,7 @@ return false;
 
     // Top left movement
     for(let i = 1; i < 8; i++) {
-      const destination= new Position( bishop.position.x - i,  bishop.position.y + i);
+      const destination = new Position(bishop.position.x - i, bishop.position.y + i);
 
       if(!tileIsOccupied(destination, boardstate)) {
         possibleMoves.push(destination);

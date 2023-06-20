@@ -1,4 +1,4 @@
-import { samePosition, TeamType } from "../../Constants";
+import { TeamType } from "../../Types";
 import { Position } from "../../modals";
 import { Piece } from "../../modals/Piece";
 import { tileIsEmptyOrOccupiedByOpponent, tileIsOccupied, tileIsOccupiedByOpponent } from "./GeneralRules";
@@ -7,7 +7,7 @@ export const kingMove = (initialPosition: Position, finalPosition: Position, tea
   let multiplierX = (initialPosition.x > finalPosition.x)? -1: (initialPosition.x === finalPosition.x)? 0 : 1;
   let multiplierY = (initialPosition.y > finalPosition.y)? -1: (initialPosition.y === finalPosition.y)? 0 : 1;
   let passedPosition= new Position ( initialPosition.x + multiplierX, initialPosition.y + multiplierY);
-  if(samePosition(passedPosition, finalPosition)){
+  if(passedPosition.samePosition( finalPosition)){
       if(tileIsEmptyOrOccupiedByOpponent(passedPosition, boardState, team)){
           return true;
       }
@@ -129,5 +129,6 @@ export const kingMove = (initialPosition: Position, finalPosition: Position, tea
         break;
       }
     }
+
     return possibleMoves;
   }

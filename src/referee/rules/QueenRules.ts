@@ -1,4 +1,4 @@
-import { TeamType } from "../../Constants";
+import { TeamType } from "../../Types";
 import { Position } from "../../modals";
 import { Piece } from "../../modals/Piece";
 import { bishopMove } from "./BishopRules";
