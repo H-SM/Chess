@@ -132,3 +132,43 @@ export const kingMove = (initialPosition: Position, finalPosition: Position, tea
 
     return possibleMoves;
   }
+  export const getCastlingMoves = (king: Piece, boardstate: Piece[]): Position[] =>{
+    const possibleMoves: Position[] = [];
+    
+    if(king.hasMoved)return possibleMoves;
+
+    //king team rooks which haven't moved 
+    const rooks = boardstate.filter(p=> p.isRook && p.team === king.team && !p.hasMoved); 
+    for(const rook of rooks){
+      //which side do we want top go with the checker
+      const direction = (rook.position.x - king.position.x > 0)? 1: -1;
+
+      const destinationRook = king.position.clone();
+      destinationRook.x += direction;
+
+      if(!rook.possibleMoves?.some(m => m.samePosition(destinationRook)))continue;
+
+      //are these final destination of castling pieces being targeted by thte enemy?? 
+      const concerningTiles = rook.possibleMoves.filter(m => m.y === king.position.y);
+      const enemyPiece = boardstate.filter(p => p.team !== king.team);
+      let valid = true;
+      // if(enemyPiece.some(p => p.possibleMoves?.some(m => concerningTiles.some(t => t.samePosition(m))))){
+      //   continue;
+      // }
+
+      for(const enemy of enemyPiece){
+        if(enemy.possibleMoves === undefined) continue;
+        for(const move of enemy.possibleMoves){
+          if(concerningTiles.some(t => t.samePosition(move))){
+            valid = false;
+          }
+          if(!valid)break;
+        }
+        if(!valid)break;
+      }
+      if(!valid)continue;
+      //we now want to add it as a possibleMove then 
+      possibleMoves.push(rook.position.clone());
+      } 
+    return possibleMoves;
+  }

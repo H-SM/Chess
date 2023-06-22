@@ -42,7 +42,7 @@ export default function Referee() {
             playedPiece.team
         );
 
-        setBoard((prevBoard) => {
+        setBoard(() => {
             const clonedBoard = board.clone();
             clonedBoard.totalTurns += 1;
 
@@ -127,7 +127,7 @@ export default function Referee() {
             const clonedBoard = board.clone();
             clonedBoard.pieces=  clonedBoard.pieces.reduce((results, piece) => {
                 if (piece.samePiecePosition(promotionPawn)) {
-                    results.push(new Piece(piece.position.clone(),pieceType, piece.team));
+                    results.push(new Piece(piece.position.clone(),pieceType, piece.team, true));
                 } else { 
                     results.push(piece);
                 }
