@@ -8,8 +8,9 @@ export class Pawn extends Piece{
         super(position, PieceType.PAWN, team, possibleMoves);
         this.enPassant=enPassant;
     }
+    
     clone(): Pawn {
-        //this overwrites the piece for pawn, just for our enpassant to work out
-        return new Pawn(this.position.clone(),this.team,this.enPassant,this.possibleMoves?.map(m => m.clone()));
+        return new Pawn(this.position.clone(),
+         this.team, this.enPassant, this.possibleMoves?.map(m => m.clone()))
     }
 }

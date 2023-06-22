@@ -6,15 +6,69 @@ import { Position } from "./Position";
 
 export class Board { 
     pieces: Piece[];
+
     constructor(pieces :Piece[]) {
         this.pieces = pieces;
     }
+
     calculateAllMove() {
+        //calculate the moves of all the pieces 
         for(const piece of this.pieces){
             piece.possibleMoves =this.getValidMoves(piece, this.pieces);
         }
+
+        this.checkKingMoves();    
     }
-    playMove(enPassantMove:boolean,validMove: boolean,playedPiece: Piece,destination: Position): boolean{
+
+    checkKingMoves(){
+        const king = this.pieces.find(p => p.isKing && p.team === TeamType.BLACK);
+
+        if(king?.possibleMoves === undefined)return;
+
+        //simulate the king moves
+        for(const move of king.possibleMoves){
+            
+            const simulatedBoard = this.clone();
+            const pieceAtDestination = simulatedBoard.pieces.find(p => p.samePosition(move));
+
+            if(pieceAtDestination !== undefined){
+                simulatedBoard.pieces = simulatedBoard.pieces.filter(p => !p.samePosition(move));
+            }
+            const simulatedKing =  simulatedBoard.pieces.find(p => p.isKing && p.team=== TeamType.BLACK);
+            // if(simulatedKing === undefined)continue; <--- looked over by "!"
+            simulatedKing!.position = move;
+
+            for(const enemy of simulatedBoard.pieces.filter(p => p.team === TeamType.WHITE)){
+                enemy.possibleMoves = simulatedBoard.getValidMoves(enemy, simulatedBoard.pieces);
+            }
+
+            let safe = true;
+
+            //logic for the safe move
+            for(const p of simulatedBoard.pieces){
+                if(p.team === TeamType.BLACK) continue;
+                if(p.isPawn){
+                    const possibleMoves = simulatedBoard.getValidMoves(p, simulatedBoard.pieces);
+                    if(possibleMoves?.some(ppm => ppm.samePosition(move) && ppm.x !== p.position.x)){
+                        safe = false;
+                        break;
+                    }
+                }else if(p.possibleMoves?.some(p => p.samePosition(move))){
+                    safe = false;
+                    break;
+                }
+            }
+            if(!safe){
+                //remove the move from possible moves
+                king.possibleMoves = king.possibleMoves?.filter(m => !m.samePosition(move));
+            }
+        }   
+    }
+    playMove(enPassantMove:boolean,
+        validMove: boolean,
+        playedPiece: Piece,
+        destination: Position
+        ): boolean{
         const pawnDirection = playedPiece.team === TeamType.WHITE ? 1 : -1;
         if (enPassantMove) {
             this.pieces = this.pieces.reduce((results, piece) => {
@@ -25,22 +79,17 @@ export class Board {
                     piece.position.x = destination.x;
                     piece.position.y = destination.y;
                     results.push(piece);
-                } else if (!piece.samePosition(destination)) {
+                } else if (!piece.samePosition(new Position(destination.x, destination.y - pawnDirection))) {
                     if(piece.isPawn){
                         (piece as Pawn).enPassant = false;
                     }
                     results.push(piece);
                 }
-                //the piece at the destination location wo'nt be pushed in the results
-
-
                 return results;
             }, [] as Piece[]);
 
             this.calculateAllMove();
         } else if (validMove) {
-            //UPDATES THE PIECE POSITION
-            //AND IF A PIECE IS ATTACKED, REMOVES IT
             this.pieces = this.pieces.reduce((results, piece) => {
                 if (piece.samePiecePosition(playedPiece)) {
                     //SPECIAL MOVE
@@ -48,10 +97,6 @@ export class Board {
                         (piece as Pawn).enPassant =
                         Math.abs(playedPiece.position.y - destination.y) === 2;
                     }
-                    //***************
-                    //SINCE WE were having the white pieces to get above black after it was attacked is -> that we weren't creating new object , but using up reference type to that object whic altered the reference not the actual board object
-                    //THIS WAS THE PROB MAKER > REF TO CHESSBOARD.TSX dropPiece() in this commit
-                    //MAKE A COPY 
                     piece.position.x = destination.x;
                     piece.position.y = destination.y;
                     results.push(piece);
@@ -93,7 +138,6 @@ export class Board {
     }
     //CLONING THE OBJECT OF THE BOARD 
     clone():Board {
-        // return this;
         return new Board(this.pieces.map(p => p.clone()));
     }
 

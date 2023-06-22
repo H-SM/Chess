@@ -14,7 +14,7 @@ export default function Referee() {
 
     useEffect(() => {
         updatePossibleMoves();
-    }, []);
+    });
 
     function updatePossibleMoves() {
         board.calculateAllMove();
@@ -24,13 +24,12 @@ export default function Referee() {
         //snaping back to initial place if no move
         let playMoveIsValid = false;
 
-        const validMove = isValidMove(
-            playedPiece.position,
-            destination,
-            playedPiece.type,
-            playedPiece.team
-        );
+        if(playedPiece.possibleMoves === undefined) return false;
 
+        const validMove = playedPiece.possibleMoves?.some(m => m.samePosition(destination));
+
+        if(!validMove) return false;
+        
         const enPassantMove = isEnPassantMove(
             playedPiece.position,
             destination,
@@ -39,17 +38,19 @@ export default function Referee() {
         );
 
         setBoard((prevBoard) => {
-            //assign the board to a new value, rather than changing over it.. so that react thinks there is a new change over the application and in need to render the UI again
             playMoveIsValid = board.playMove(enPassantMove, validMove, playedPiece,destination);
             
             return board.clone();
-        })
-        //since I wasn't updating up the state of teh board after the moves gets executed, I was having that weird error lol 
+        });
         let promotionRow = (playedPiece.team === TeamType.WHITE) ? 7 : 0;
 
         if (destination.y === promotionRow && playedPiece.isPawn) {
             modalRef.current?.classList.remove("hidden");
-            setPromotionPawn(playedPiece);
+            setPromotionPawn((prevPromotionPosition)=> {
+                const clonedPLayedPiece = playedPiece.clone();
+                clonedPLayedPiece.position = destination.clone();
+                return clonedPLayedPiece;
+            });
         }
        
         return playMoveIsValid;
@@ -83,14 +84,6 @@ export default function Referee() {
 
         return false;
     }
-
-    //TODO
-    //Pawn promotion!
-    //Prevent the king from moving into danger!
-    //Add castling!
-    //Add check!
-    //Add checkmate!
-    //Add stalemate!
     function isValidMove(initialPosition: Position, desiredPosition: Position, type: PieceType, team: TeamType) {
         let validMove = false;
         switch (type) {
@@ -121,37 +114,21 @@ export default function Referee() {
         if (promotionPawn === undefined) {
             return;
         }
-
-        board.pieces = board.pieces.reduce((results, piece) => {
-            if (piece.samePiecePosition(promotionPawn)) {
-                piece.type = pieceType;
-                const teamType = (piece.team === TeamType.WHITE) ? "w" : "b";
-                let image = "";
-                switch (pieceType) {
-                    case PieceType.ROOK: {
-                        image = "rook";
-                        break;
-                    }
-                    case PieceType.BISHOP: {
-                        image = "bishop";
-                        break;
-                    }
-                    case PieceType.KNIGHT: {
-                        image = "knight";
-                        break;
-                    }
-                    case PieceType.QUEEN: {
-                        image = "queen";
-                        break;
-                    }
+        //board is a state variable - we will use setBoard not board.piece
+        setBoard((prevBoard)=> {
+            const clonedBoard = board.clone();
+            clonedBoard.pieces=  clonedBoard.pieces.reduce((results, piece) => {
+                if (piece.samePiecePosition(promotionPawn)) {
+                    results.push(new Piece(piece.position.clone(),pieceType, piece.team));
+                } else { 
+                    results.push(piece);
                 }
-                piece.image = `assets/images/${image}_${teamType}.png`;
-            }
-            results.push(piece);
-            return results;
-        }, [] as Piece[])
-        
-        updatePossibleMoves();
+                return results;
+            }, [] as Piece[]);
+
+            clonedBoard.calculateAllMove();
+            return clonedBoard;
+        })
 
         modalRef.current?.classList.add("hidden");
     }
@@ -164,10 +141,10 @@ export default function Referee() {
         <>
             <div id="pawn-promotion-modal" className="hidden" ref={modalRef}>
                 <div className="modal-body">
-                    <img onClick={() => promotePawn(PieceType.ROOK)} src={`/assets/images/rook_${promotionTeamType()}.png`} />
-                    <img onClick={() => promotePawn(PieceType.BISHOP)} src={`/assets/images/bishop_${promotionTeamType()}.png`} />
-                    <img onClick={() => promotePawn(PieceType.KNIGHT)} src={`/assets/images/knight_${promotionTeamType()}.png`} />
-                    <img onClick={() => promotePawn(PieceType.QUEEN)} src={`/assets/images/queen_${promotionTeamType()}.png`} />
+                    <img onClick={() => promotePawn(PieceType.ROOK)} src={`/assets/images/rook_${promotionTeamType()}.png`} alt=""/>
+                    <img onClick={() => promotePawn(PieceType.BISHOP)} src={`/assets/images/bishop_${promotionTeamType()}.png`} alt=""/>
+                    <img onClick={() => promotePawn(PieceType.KNIGHT)} src={`/assets/images/knight_${promotionTeamType()}.png`} alt=""/>
+                    <img onClick={() => promotePawn(PieceType.QUEEN)} src={`/assets/images/queen_${promotionTeamType()}.png`} alt=""/>
                 </div>
             </div>
             <Chessboard playMove={playMove}
