@@ -1,51 +1,79 @@
-# Chess
-This application provides a digital platform to play the classic game of chess online. It features an intuitive user interface, interactive gameplay, and supports standard chess rules and moves. The application leverages React's component-based architecture and state management to provide a seamless and responsive experience.
+# Chess Application
+<p align="center">
+  <img src="https://i.imgur.com/OMGmMc9.png" height="550" alt="h-sm" />
+</p>
 
-[Link for the pngs..](https://commons.wikimedia.org/wiki/Category:PNG_chess_pieces/Standard_transparent)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub issues](https://img.shields.io/github/issues/H-SM/Chess.svg)](https://github.com/H-SM/Chess/issues)
+[![GitHub stars](https://img.shields.io/github/stars/H-SM/Chess.svg)](https://github.com/H-SM/Chess/stargazers)
 
-# Getting Started with Create React App
+This is a chess application developed using React and npx. It provides a comprehensive chess-playing experience with various features and functionalities. This application provides a digital platform to play the classic game of chess online. It features an intuitive user interface, interactive gameplay, and supports standard chess rules and moves. The application leverages React's component-based architecture and state management to provide a seamless and responsive experience. The application allows you to play a great game of chess and incorporates the following aspects:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- **Normal Piece Movements**: The chess game includes all the standard piece movements, allowing players to move their pieces according to the rules of chess.
+<p align="center">
+  <img src="https://i.imgur.com/nJeWtzd.png" height="550" alt="h-sm" />
+</p>
 
-## Available Scripts
+- **PossibleMoves Logic**: The application incorporates a robust PossibleMoves logic, which accurately determines the legal moves available to each piece on the board. This ensures that players can only make valid moves based on the rules of chess.
+<p align="center">
+  <img src="https://i.imgur.com/jjCD1oJ.png" height="550" alt="h-sm" />
+</p>
 
-In the project directory, you can run:
+- **En Passant Move**: The chess engine supports the en passant move, which is a special pawn capture that can occur under specific circumstances. This adds depth and strategy to the gameplay.
+<p align="center">
+  <img src="https://i.imgur.com/O8ZmxPu.png" height="550" alt="h-sm"  crop: true />
+</p>
 
-### `npm start`
+- **Castling**: The application includes the castling move, a unique maneuver that allows the king to move two squares towards a rook, while the rook moves to the other side of the king. This defensive move is an important aspect of the game, and players can utilize it to fortify their positions.
+<p align="center">
+  <img src="https://i.imgur.com/vTmohG9.png" height="550" alt="h-sm" />
+</p>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Checkmate Mechanism & End-Game Notifier**: The application implements a checkmate mechanism to detect when a player's king is in checkmate, resulting in the end of the game. Additionally, an end-game notifier alerts players when the game reaches its conclusion.
+<p align="center">
+  <img src="https://i.imgur.com/G3v2yga.png" height="550" alt="h-sm" />
+</p>
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **Built with React & npx**: The application is built using React, a popular JavaScript library for building user interfaces. The use of npx simplifies the setup and execution of the application.
 
-### `npm test`
+- **Stalemate Logic Pending**: The application currently lacks the implementation of stalemate logic, which results in a draw when a player has no legal moves available but is not in checkmate. This functionality may be added in future updates.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Issue with Moving Pieces Outside the Board**: There is an issue in the application where pieces can be moved outside the bounds of the chessboard. This is an area for improvement and will be addressed in future updates.
 
-### `npm run build`
+Feel free to explore the [Chess Application](https://github.com/H-SM/Chess) and enjoy a great game of chess using this interactive and feature-rich application.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Deployment
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The application is deployed and accessible at [Chess Application](https://6494f1f87b65d61a2deb525d--funny-marzipan-7f1bb7.netlify.app/).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Installation
 
-### `npm run eject`
+1. Clone the repository:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+   ```bash
+   git clone https://github.com/H-SM/Chess.git
+2. Navigate to the project directory:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   ```bash
+   cd Chess
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+3. Install the dependencies:
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+   ```bash
+   npm install
+4. Start the application:
 
-## Learn More
+   ```bash
+   npm start
+5. Open your browser and visit http://localhost:3000 to play chess.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Contributing
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Contributions are welcome! If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
+
+<p align="center">
+  <img src="https://i.imgur.com/UYJraYv.png" height="550" alt="h-sm" crop: true />
+</p>
+
+
+
