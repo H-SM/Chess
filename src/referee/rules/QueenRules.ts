@@ -1,18 +1,6 @@
-import { TeamType } from "../../Types";
 import { Position } from "../../modals";
 import { Piece } from "../../modals/Piece";
-import { bishopMove } from "./BishopRules";
 import { tileIsOccupied, tileIsOccupiedByOpponent } from "./GeneralRules";
-import { rookMove } from "./RookRules";
-
-export const queenMove = (initialPosition: Position, finalPosition: Position, team: TeamType, boardState: Piece[]): boolean => {
-  if(bishopMove(initialPosition,finalPosition,team, boardState)){
-     return true;
-  }else if(rookMove(initialPosition,finalPosition,team, boardState)){
-      return true;
-  }else 
-    return false;
-}
 
   export const getPossibleQueenMoves = (queen: Piece, boardstate: Piece[]): Position[] => {
     const possibleMoves: Position[] = [];
@@ -131,3 +119,10 @@ export const queenMove = (initialPosition: Position, finalPosition: Position, te
 
     return possibleMoves;
   }
+
+  //   if(bishopMove(initialPosition,finalPosition,team, boardState)){
+//      return true;
+//   }else if(rookMove(initialPosition,finalPosition,team, boardState)){
+//       return true;
+//   }else 
+//     return false;

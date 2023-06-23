@@ -7,6 +7,7 @@ import { Position } from "./Position";
 export class Board { 
     pieces: Piece[];
     totalTurns : number;
+    winningTeam?: TeamType ;
 
     constructor(pieces :Piece[], totalTurns : number) {
         this.pieces = pieces;
@@ -31,6 +32,11 @@ export class Board {
         for(const piece of this.pieces.filter(p=> p.team !== this.currentTeam)){
             piece.possibleMoves =[];
         }
+
+        //check if the playing team still have some moves , else its a checkmate 
+        if(this.pieces.filter(p => p.team === this.currentTeam).some(p => p.possibleMoves !== undefined && p.possibleMoves.length > 0))return;
+
+        this.winningTeam = (this.currentTeam === TeamType.WHITE) ? TeamType.BLACK : TeamType.WHITE;
     }
     get currentTeam():TeamType{
         return (this.totalTurns % 2 === 0)?TeamType.BLACK: TeamType.WHITE;
@@ -47,7 +53,7 @@ export class Board {
                 //possible way to remove the checkmating piece over the king via move from any other random piece
                 simulatedBoard.pieces = simulatedBoard.pieces.filter(p => !p.samePosition(move));  
 
-                const clonedPiece = simulatedBoard.pieces.find(p => p. samePiecePosition(peice))!;
+                const clonedPiece = simulatedBoard.pieces.find(p => p.samePiecePosition(peice))!;
                 clonedPiece.position = move.clone();
 
                 const clonedKing =  simulatedBoard.pieces.find(p => p.isKing && p.team === simulatedBoard.currentTeam)!;
@@ -74,9 +80,25 @@ export class Board {
         destination: Position
         ): boolean{
         const pawnDirection = playedPiece.team === TeamType.WHITE ? 1 : -1;
+        const destinationPiece = this.pieces.find(p => p.samePosition(destination));
 
         //castling move 
-        //TODO:
+        if(playedPiece.isKing && destinationPiece?.isRook && destinationPiece.team === playedPiece.team){
+            const direction = (destinationPiece.position.x - playedPiece.position.x > 0)? 1: -1;    
+            const newKingPosition = playedPiece.position.x + direction*2;
+            // weuse map as there is no change over the count of the pieces in the board over castling
+            this.pieces =this.pieces.map(p => {
+                if(p.samePiecePosition(playedPiece)){
+                    p.position.x = newKingPosition;
+                }else if(p.samePiecePosition(destinationPiece)){
+                    p.position.x = newKingPosition - direction;
+                }
+                return p;
+            });
+
+            this.calculateAllMove();
+            return true;
+        }
         
         if (enPassantMove) {
             this.pieces = this.pieces.reduce((results, piece) => {

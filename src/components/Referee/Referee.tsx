@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { bishopMove, kingMove, knightMove, pawnMove, queenMove, rookMove } from "../../referee/rules";
+import { useRef, useState } from "react";
 import Chessboard from "../Chessboard/Chessboard";
 import { Piece, Position } from "../../modals";
 import { PieceType, TeamType } from "../../Types";
@@ -8,13 +7,10 @@ import { initialBoard } from "../../Constants";
 import { Board } from "../../modals/Board";
 
 export default function Referee() {
-    const [board, setBoard] = useState<Board>(initialBoard);
+    const [board, setBoard] = useState<Board>(initialBoard.clone());
     const [promotionPawn, setPromotionPawn] = useState<Piece>();
     const modalRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        board.calculateAllMove();
-    });
+    const checkmateModalRef = useRef<HTMLDivElement>(null);
     
     function playMove(playedPiece: Piece, destination: Position): boolean {
         //snaping back to initial place if no move
@@ -48,6 +44,9 @@ export default function Referee() {
 
             playMoveIsValid = clonedBoard.playMove(enPassantMove, validMove, playedPiece,destination);
 
+            if(clonedBoard.winningTeam !== undefined){
+                checkmateModalRef.current?.classList.remove("hidden");
+            }
             return clonedBoard;
         });
         let promotionRow = (playedPiece.team === TeamType.WHITE) ? 7 : 0;
@@ -64,6 +63,11 @@ export default function Referee() {
         return playMoveIsValid;
     }
 
+    function restartGame(){
+        checkmateModalRef.current?.classList.add("hidden");
+        setBoard(initialBoard.clone());
+
+    }
     function isEnPassantMove(
         initialPosition: Position,
         desiredPosition: Position,
@@ -91,30 +95,6 @@ export default function Referee() {
         }
 
         return false;
-    }
-    function isValidMove(initialPosition: Position, desiredPosition: Position, type: PieceType, team: TeamType) {
-        let validMove = false;
-        switch (type) {
-            case PieceType.PAWN:
-                validMove = pawnMove(initialPosition, desiredPosition, team, board.pieces);
-                break;
-            case PieceType.KNIGHT:
-                validMove = knightMove(initialPosition, desiredPosition, team, board.pieces);
-                break;
-            case PieceType.BISHOP:
-                validMove = bishopMove(initialPosition, desiredPosition, team, board.pieces);
-                break;
-            case PieceType.ROOK:
-                validMove = rookMove(initialPosition, desiredPosition, team, board.pieces);
-                break;
-            case PieceType.QUEEN:
-                validMove = queenMove(initialPosition, desiredPosition, team, board.pieces);
-                break;
-            case PieceType.KING:
-                validMove = kingMove(initialPosition, desiredPosition, team, board.pieces);
-        }
-
-        return validMove;
     }
 
 
@@ -147,8 +127,8 @@ export default function Referee() {
 
     return (
         <>
-            <p style={{color: "white", fontSize :"24px"}}>{board.totalTurns}</p>
-            <div id="pawn-promotion-modal" className="hidden" ref={modalRef}>
+            <p style={{color: "white", fontSize :"20px", textAlign:"center"}}>Turn - {(board.totalTurns % 2 === 0)? "black": "white"}</p>
+            <div className="modal hidden" ref={modalRef}>
                 <div className="modal-body">
                     <img onClick={() => promotePawn(PieceType.ROOK)} src={`/assets/images/rook_${promotionTeamType()}.png`} alt=""/>
                     <img onClick={() => promotePawn(PieceType.BISHOP)} src={`/assets/images/bishop_${promotionTeamType()}.png`} alt=""/>
@@ -156,8 +136,17 @@ export default function Referee() {
                     <img onClick={() => promotePawn(PieceType.QUEEN)} src={`/assets/images/queen_${promotionTeamType()}.png`} alt=""/>
                 </div>
             </div>
+            <div className="modal hidden" ref={checkmateModalRef}>
+                <div className="modal-body">
+                    <div className="checkmate-body">
+                    <span>The winning team is - {(board.winningTeam === TeamType.WHITE)? "WHITE": "BLACK"}!</span>
+                    <button onClick={restartGame}>Play Again!</button>
+                    </div>
+                </div>
+            </div>
             <Chessboard playMove={playMove}
                 pieces={board.pieces} />
+                <footer style={{color: "white", fontSize :"15px", textAlign:"center"}}>Made by @ HSM</footer>
         </>
     )
 }
